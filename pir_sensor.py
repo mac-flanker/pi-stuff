@@ -17,31 +17,45 @@ def initPinsOut():
 
 def main():
 
+    GPIO.setmode(GPIO.BOARD)
+    sensorOut = 11
+    GPIO.setup(sensorOut, GPIO.IN)
+    preVal    = GPIO.input(sensorOut)
+
     RUNNING   = True
     rgb_led   = rgb_control.RGBLed(33,35,37)
-    sensorOut = 11
-    preVal    = GPIO.input(sensorOut)
+    print(str(preVal))
+    if preVal == 0:
+      print('Zero')
+
 
     try:
         while RUNNING:
+            GPIO.setmode(GPIO.BOARD)
+            GPIO.setup(sensorOut, GPIO.IN)
             curVal = GPIO.input(sensorOut)
 
             if curVal == 1:
-                rgb_led.redOn
+                rgb_led.redOn()
                 if curVal != preVal:
                     print('New motion detected')
 
             else:
-                rgb_led.redOff
+                rgb_led.redOff()
             
             preVal = curVal
     except Exception as e:
         print(e)
-    except KeyboardInterrupt:
+        reg_led.redOff()
         RUNNING = False
-    
-    GPIO.cleanup()
+        GPIO.cleanup()
+    except KeyboardInterrupt:
+        rgb_led.redOff()
+        RUNNING = False
+        GPIO.cleanup()
     return
 
 
+initPinsOut()
 main()
+
